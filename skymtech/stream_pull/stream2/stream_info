@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# RTMP_UDP_2
+
+STREAM_NAME="RTMP_UDP_2"
+STREAM_PID_PATH="/tmp/$STREAM_NAME-pid"
+
+INPUT_URL="rtmp://shinestream.in:1935/solaitv/solaitv"
+
+OUTPUT_URL="udp://224.24.24.2:2021"
+
+OUTPUT_INTERFACE="eth1"
+
+ip4=$(/sbin/ip -o -4 addr list $OUTPUT_INTERFACE | awk '{print $4}' | cut -d/ -f1)
+OUTPUT_INTERFACE_IP=$ip4
+
+#echo $OUTPUT_INTERFACE_IP
+
+source /opt/skymtech/stream_pull/preset_rtmp_copy_udp

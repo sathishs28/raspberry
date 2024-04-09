@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ ! -d playlist ]; then
+  mkdir playlist
+fi
+#if [ ! -d playlist/240p30 ]; then
+#  mkdir playlist/240p30
+#fi
+if [ ! -d playlist/360p ]; then
+  mkdir playlist/360p
+fi
+#if [ ! -d playlist/480p ]; then
+#  mkdir playlist/480p
+#fi
+
+ffmpeg -threads 4 -re -y -f flv -listen 1 -i $INPUT_URL \
+  -g 25 -sc_threshold 0 -aspect 16:9 \
+  -s:v 640x360 -c:v libx264 -preset superfast -crf 26 -b:v 200k \
+  -c:a aac -b:a 128k -ac 2 \
+  -threads 4 -f hls -hls_time 3 -hls_wrap 15 \
+  "playlist/360p/manifest.m3u8" \
+</dev/null > /dev/null 2>&1 & echo $! > $STREAM_PID_PATH

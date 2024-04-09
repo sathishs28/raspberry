@@ -1,0 +1,7 @@
+#!/bin/bash
+
+MULTICASTService start
+
+sleep 1
+
+STREAMService start

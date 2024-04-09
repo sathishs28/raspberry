@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ffmpeg -threads 4 -re -i $INPUT_URL \
+  -c:v copy -c:a copy \
+  -threads 4 -mpegts_pmt_start_pid 4441 -streamid 0:4442 -streamid 1:4443 \
+  -metadata service_provider="SKYM TECH" -metadata service_name="Channel 1" \
+  -f mpegts "udp://224.24.24.1:2021?pkt_size=1316&localaddr=192.168.1.224"
+#</dev/null > /dev/null 2>&1 & echo $! > $STREAM_PID_PATH

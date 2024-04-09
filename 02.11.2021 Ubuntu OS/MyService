@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Enable Multicast
+#/usr/local/bin/./enable_multicast
+
+# Inital Auto Start
+
+#Streamer start
+
+# Stream Cont. Check
+
+/usr/local/bin/./AutoStart
+
+

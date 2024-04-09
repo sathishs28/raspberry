@@ -1,0 +1,49 @@
+#!/bin/bash
+
+a=1
+
+while [ $a -le 1 ]
+
+do
+
+# Check weather the Active Streams are running in the process
+
+PROCESS_LIST=`ps ux`
+
+while read p; do
+ case "$PROCESS_LIST" in
+        *$p*)
+                ;;
+        *) logger "smsserver task some how stopped.."
+        $p stop
+        sleep 1
+        $p start
+        ;;
+ esac
+        sleep 1
+done </usr/local/bin/Active_Streams
+
+echo "Process is Running..."
+
+sleep 1
+
+# Check the multicast interface is up or not
+
+MULTICAST_PORT="eth1"
+
+STATUS=$(cat /sys/class/net/$MULTICAST_PORT/operstate)
+
+	if [ "$STATUS" == down ];
+	then
+	   
+done
+
+while [ $a -lt 10 ]
+do
+   echo $a
+   if [ $a -eq 5 ]
+   then
+      break
+   fi
+   a=`expr $a + 1`
+done

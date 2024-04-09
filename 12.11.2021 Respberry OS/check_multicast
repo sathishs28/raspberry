@@ -1,0 +1,45 @@
+#!/bin/bash
+
+a=1
+while [ $a -le 1 ]
+do
+
+# Check the multicast interface is up or not
+MULTICAST_PORT="eth1"
+STATUS=$(cat /sys/class/net/$MULTICAST_PORT/operstate)
+
+case "$STATUS" in
+   "up")
+	echo "Multicast port interface - $MULTICAST_PORT is up"
+	ACTIVE=$(ip route | grep 224.0.0.0/4 && echo "present" || echo "not_present" )
+	case "$ACTIVE" in
+	   "present")
+	echo "Multicast route already added"
+	;;
+           "not_present")
+	echo "Multicast route not added"
+	route -n add -net 224.0.0.0 netmask 240.0.0.0 dev $MULTICAST_PORT
+	echo "Multicast route added succesfully"
+	;;
+	esac
+   ;;
+   "down")
+	echo "Multicast interface is down, waiting for network connection"
+	while [ $STATUS == down ]
+	do
+	echo "Contineous check the phyisical interface status"
+	CURRENT_STATUS=$(cat /sys/class/net/$MULTICAST_PORT/operstate) ###--- Get Interface current status  ---###
+	echo "Status - $CURRENT_STATUS"
+	sleep 1
+	if [ "$CURRENT_STATUS" == up ];
+	 then
+	 echo "Now Interface - $MULTICAST_PORT UP"
+	 route -n add -net 224.0.0.0 netmask 240.0.0.0 dev $MULTICAST_PORT
+	 echo "Multicast route Added sucessfully"
+	 break
+	 fi
+	done
+   ;;
+esac
+sleep 1
+done

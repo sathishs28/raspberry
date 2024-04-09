@@ -1,0 +1,25 @@
+#!/bin/sh
+
+SERVICE_NAME=Active_streams   # For RTMP Streams #
+
+case $1 in
+   start)
+	while read p; do
+        $p start
+	sleep 1
+	done </usr/local/bin/Active_Streams
+    ;;
+    stop)
+	while read p; do
+        $p stop
+        sleep 1
+        done </usr/local/bin/Active_Streams
+    ;;
+   restart)
+	while read p; do
+        $p restart
+        sleep 1
+        done </usr/local/bin/Active_Streams
+   ;; esac
+
+

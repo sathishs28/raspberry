@@ -1,0 +1,21 @@
+#!/bin/bash
+
+export DIR_NAME=$(basename "$PWD")
+
+export STREAM_NAME="$DIR_NAME"
+export STREAM_PID_PATH="/tmp/$STREAM_NAME-pid"
+
+export INPUT_URL="rtmp://shinestream.in:1935/solaitv/solaitv"
+
+export PMT_PID=4500
+export VIDEO_PID=4501
+export AUDIO_PID=4502
+export OUTPUT_INTERFACE="eth0"
+export OUTPUT_URL="udp://224.24.24.2:2021"
+
+export ip4=$(/sbin/ip -o -4 addr list $OUTPUT_INTERFACE | awk '{print $4}' | cut -d/ -f1)
+export OUTPUT_INTERFACE_IP=$ip4
+
+#echo $OUTPUT_INTERFACE_IP
+
+$source /opt/skymtech/stream_pull/preset_rtmp_copy_udp.x

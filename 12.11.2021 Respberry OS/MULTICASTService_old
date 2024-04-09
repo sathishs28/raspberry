@@ -1,0 +1,76 @@
+#!/bin/sh
+
+Enable_Multicast ()
+{
+a=1
+while [ $a -le 1 ]
+do
+
+# Check the multicast interface is up or not
+MULTICAST_PORT="eth1"
+STATUS=$(cat /sys/class/net/$MULTICAST_PORT/operstate)
+
+case "$STATUS" in
+   "up")
+        echo "Multicast port interface - $MULTICAST_PORT is up"
+   ;;
+   "down")
+        echo "Multicast interface is down, waiting for network connection"
+        while [ $STATUS == down ]
+        do
+        echo "Contineous check the phyisical interface status"
+        CURRENT_STATUS=$(cat /sys/class/net/$MULTICAST_PORT/operstate) ###--- Get Interface current status  ---###
+        echo "Status - $CURRENT_STATUS"
+        sleep 1
+        if [ "$CURRENT_STATUS" == up ];
+         then
+         echo "Now Interface - $MULTICAST_PORT UP"
+         /usr/local/bin/./enable_multicast
+         echo "Multicast route Added sucessfully"
+         break
+         fi
+        done
+   ;;
+esac
+sleep 1
+done
+}
+
+SERVICE_NAME=$(basename "$0")
+PID_PATH_NAME=/tmp/$SERVICE_NAME-pid
+case $1 in
+    start)
+        echo "Starting $SERVICE_NAME ..."
+        if [ ! -f $PID_PATH_NAME ]; then
+            Enable_Multicast </dev/null > /dev/null 2>&1 & echo $! > $PID_PATH_NAME
+            echo "$SERVICE_NAME started ..."
+        else
+            echo "$SERVICE_NAME is already running ..."
+        fi
+    ;;
+    stop)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME stoping ..."
+            kill $PID;
+            echo "$SERVICE_NAME stopped ..."
+            rm $PID_PATH_NAME
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+    restart)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME stopping ...";
+            kill $PID;
+            echo "$SERVICE_NAME stopped ...";
+            rm $PID_PATH_NAME
+            echo "$SERVICE_NAME starting ..."
+            Enable_Multicast </dev/null > /dev/null 2>&1 & echo $! > $PID_PATH_NAME
+            echo "$SERVICE_NAME started ..."
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+esac

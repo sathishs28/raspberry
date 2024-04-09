@@ -1,0 +1,40 @@
+#!/bin/bash
+
+a=1
+
+while [ $a -le 1 ]
+
+do
+
+# Check weather RTMPStreamer is running in the process
+
+ while read P; do
+
+  TEST_FILE=/tmp/$P-pid
+    if test -f "$TEST_FILE" ; then
+    	echo -e "tmp $P pid present"
+    	echo -e "Check wheather the $P is running or not in Proces List"
+    	PID=$(cat /tmp/$P-pid)
+    	PROCESS_LIST=`ps ux`
+             case "$PROCESS_LIST" in
+                *$P*)
+	        ;;
+        	*) logger "smsserver task some how stopped.."
+		echo -e "$P Not Running in Proces List"
+        	$P stop
+        	sleep 2
+        	$P start
+        	;;
+		esac
+    else
+        echo -e "tmp $P PID not present and $P Not_Running..."
+             $P stop
+             sleep 2
+             $P start
+    fi
+ done </usr/local/bin/Active_Streams
+
+echo "Process is Running..."
+sleep 1
+
+done

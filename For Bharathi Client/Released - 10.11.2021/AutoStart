@@ -1,0 +1,30 @@
+#!/bin/bash
+
+a=1
+
+while [ $a -le 1 ]
+
+do
+
+# Check weather RTMPStreamer is running in the process
+
+PROCESS_LIST=`ps ux`
+
+while read p; do
+ case "$PROCESS_LIST" in
+        *$p*)
+                ;;
+        *) logger "smsserver task some how stopped.."
+        $p stop
+        sleep 1
+        $p start
+        ;;
+ esac
+        sleep 1
+done </usr/local/bin/Active_Streams
+
+echo "Process is Running..."
+
+sleep 1
+
+done

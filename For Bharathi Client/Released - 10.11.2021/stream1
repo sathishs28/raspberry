@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# STREAM
+
+get_stream_name=$(basename "$0")
+
+STREAM_NAME=$(echo "$get_stream_name")
+
+PATH_TO=/opt/skymtech/stream_pull/$STREAM_NAME
+STREAM_PID_PATH=/tmp/$STREAM_NAME-pid
+
+case $1 in
+    start)
+        echo "Starting $STREAM_NAME ..."
+        if [ ! -f $STREAM_PID_PATH ]; then
+            cd $PATH_TO
+            nohup ./stream_info </dev/null > /dev/null 2>&1 & echo $! > $STREAM_PID_PATH
+            echo "$STREAM_NAME started ..."
+        else
+            echo "$STREAM_NAME is already running ..."
+        fi
+    ;;
+    stop)
+        if [ -f $STREAM_PID_PATH ]; then
+            PID=$(cat $STREAM_PID_PATH);
+            echo "$STREAM_NAME stoping ..."
+            kill $PID;
+            echo "$STREAM_NAME stopped ..."
+            rm $STREAM_PID_PATH
+        else
+            echo "$STREAM_NAME is not running ..."
+        fi
+    ;;
+    restart)
+        if [ -f $STREAM_PID_PATH ]; then
+            PID=$(cat $STREAM_PID_PATH);
+            echo "$STREAM_NAME stopping ...";
+            kill $PID;
+            echo "$STREAM_NAME stopped ...";
+            rm $STREAM_PID_PATH
+            echo "$STREAM_NAME starting ..."
+            cd $PATH_TO
+            nohup ./stream_info /tmp 2>> /dev/null >> /dev/null &
+                        echo $! > $STREAM_PID_PATH
+            echo "$STREAM_NAME started ..."
+        else
+            echo "$STREAM_NAME is not running ..."
+        fi
+    ;; esac
